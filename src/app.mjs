@@ -25,7 +25,7 @@ try {
 
       res.status(201).send("User signed up successfully!!");
     } catch (eror) {
-      console.log("signup error: ", eror);
+      console.log("signup error: ", eror.message);
 
       res.status(400).send("error while signup!!");
     }
@@ -91,15 +91,18 @@ try {
     try {
       const updatedUser = await User.findByIdAndUpdate(userId, data, {
         returnDocument: "after",
+        runValidators: true, // run validations while update as well otherwise validations will only run when creating new document.
       });
 
       res
         .status(200)
         .send({ message: "User updated successfully!", data: updatedUser });
     } catch (error) {
-      console.log("error while updating user: ", error);
+      console.log("error while updating user: ", error.message);
 
-      res.status(400);
+      res
+        .status(400)
+        .send({ error: { message: "Error while updating user!" } });
     }
   });
 
