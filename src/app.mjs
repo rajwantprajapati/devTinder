@@ -42,15 +42,15 @@ try {
       const user = await User.findOne({ emailId: userEmailId });
 
       if (!user) {
-        return res.status(404).send({ error: { message: "User not found!" } });
+        throw new Error("User not found!");
       }
 
       res.status(200).send(user);
     } catch (error) {
-      console.log("error in fetching user by email: ", error);
+      console.log("error in fetching user by email: ", error.message);
 
       res.status(400).send({
-        error: { message: "Something went wrong in fetching user by email id" },
+        error: { message: `FETCH BY EMAIL FAILED: ${error.message}` },
       });
     }
   });
@@ -66,17 +66,17 @@ try {
       const deletedUser = await User.findByIdAndDelete(userId); // or {_id: userId}
 
       if (!deletedUser) {
-        return res.status(404).send({ error: { message: "User not found!" } });
+        throw new Error("User not found!");
       }
 
       res
         .status(200)
         .send({ message: "User deleted successfully!!", data: deletedUser });
     } catch (error) {
-      console.log("error while deleting user by id: ", error);
+      console.log("error while deleting user by id: ", error.message);
 
       res.status(400).send({
-        error: { message: "Something went wrong while deleting user by id" },
+        error: { message: `DELETE USER FAILED: ${error.message}` },
       });
     }
   });
@@ -100,9 +100,9 @@ try {
     } catch (error) {
       console.log("error while updating user: ", error.message);
 
-      res
-        .status(400)
-        .send({ error: { message: "Error while updating user!" } });
+      res.status(400).send({
+        error: { message: `UPDATE FAILED: ${error.message}` },
+      });
     }
   });
 
@@ -115,15 +115,15 @@ try {
       const users = await User.find();
 
       if (users?.length === 0) {
-        return res.status(404).send("No user found!");
+        throw new Error("No user found!");
       }
 
       res.status(200).send(users);
     } catch (error) {
-      console.log("error in fetching users ", error);
+      console.log("error in fetching users ", error.message);
 
       res.status(400).send({
-        error: { message: "Something went wrong in fetching users" },
+        error: { message: `FETCH ALL USERS FAILED: ${error.message}` },
       });
     }
   });
@@ -135,5 +135,5 @@ try {
     console.log("Server is listening at port: ", PORT);
   });
 } catch (error) {
-  console.log("DB connection failed!!: ", error);
+  console.log("DB connection failed!!: ", error.message);
 }
