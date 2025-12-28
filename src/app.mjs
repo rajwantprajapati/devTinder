@@ -82,6 +82,28 @@ try {
   });
 
   /**
+   * Update user
+   * PATCH /user api - Update user data
+   */
+  app.patch("/user", async (req, res) => {
+    const { userId, data } = req.body;
+
+    try {
+      const updatedUser = await User.findByIdAndUpdate(userId, data, {
+        returnDocument: "after",
+      });
+
+      res
+        .status(200)
+        .send({ message: "User updated successfully!", data: updatedUser });
+    } catch (error) {
+      console.log("error while updating user: ", error);
+
+      res.status(400);
+    }
+  });
+
+  /**
    * Feed API
    * GET /feed - get all the users from database
    */
