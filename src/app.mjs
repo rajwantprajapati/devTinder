@@ -56,6 +56,32 @@ try {
   });
 
   /**
+   * Delete user API
+   * DELETE /user api - delete user by Id
+   */
+  app.delete("/user", async (req, res) => {
+    const userId = req.body.userId;
+
+    try {
+      const deletedUser = await User.findByIdAndDelete(userId); // or {_id: userId}
+
+      if (!deletedUser) {
+        return res.status(404).send({ error: { message: "User not found!" } });
+      }
+
+      res
+        .status(200)
+        .send({ message: "User deleted successfully!!", data: deletedUser });
+    } catch (error) {
+      console.log("error while deleting user by id: ", error);
+
+      res.status(400).send({
+        error: { message: "Something went wrong while deleting user by id" },
+      });
+    }
+  });
+
+  /**
    * Feed API
    * GET /feed - get all the users from database
    */
