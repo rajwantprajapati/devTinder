@@ -18,7 +18,8 @@ try {
    */
   app.post("/signup", async (req, res) => {
     // Create new instance of user model with req body
-    const user = new User(req.body);
+    const data = req.body;
+    const user = new User(data);
 
     try {
       if (data?.skills?.length > 10) {
@@ -31,7 +32,9 @@ try {
     } catch (eror) {
       console.log("signup error: ", eror.message);
 
-      res.status(400).send("error while signup!!");
+      res
+        .status(400)
+        .send({ error: { message: `SIGNUP FAILED: ${eror.message}` } });
     }
   });
 
