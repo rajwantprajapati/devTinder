@@ -21,6 +21,10 @@ try {
     const user = new User(req.body);
 
     try {
+      if (data?.skills?.length > 10) {
+        throw new Error("Skills cannot be more that 10");
+      }
+
       await user.save();
 
       res.status(201).send("User signed up successfully!!");
@@ -85,10 +89,24 @@ try {
    * Update user
    * PATCH /user api - Update user data
    */
-  app.patch("/user", async (req, res) => {
-    const { userId, data } = req.body;
+  app.patch("/user/:userId", async (req, res) => {
+    const userId = req.params?.userId;
+    const data = req.body;
+    const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
+
+    const isUpdateAllowed = Object.keys(data).every((key) =>
+      ALLOWED_UPDATES.includes(key),
+    );
 
     try {
+      if (!isUpdateAllowed) {
+        throw new Error("Some fields are not allowed to be updated!!");
+      }
+
+      if (data?.skills?.length > 10) {
+        throw new Error("Skills cannot be more that 10");
+      }
+
       const updatedUser = await User.findByIdAndUpdate(userId, data, {
         returnDocument: "after",
         runValidators: true, // run validations while update as well otherwise validations will only run when creating new document.
