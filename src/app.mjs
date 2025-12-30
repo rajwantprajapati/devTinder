@@ -1,6 +1,8 @@
 import express from "express";
+import bcrypt from "bcrypt";
 import { connectDB } from "./config/database.mjs";
 import User from "./models/user.mjs";
+import { validateSignUpData } from "./utilities/validation.mjs";
 
 const app = express();
 
@@ -18,11 +20,40 @@ try {
    */
   app.post("/signup", async (req, res) => {
     // Create new instance of user model with req body
-    const data = req.body;
-    const user = new User(data);
+    const reqPayload = req.body;
 
     try {
-      if (data?.skills?.length > 10) {
+      // Validate req body
+      validateSignUpData(reqPayload);
+
+      const {
+        firstName,
+        lastName,
+        password,
+        emailId,
+        age,
+        photoUrl,
+        gender,
+        about,
+        skills,
+      } = reqPayload;
+
+      // Encrypt the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const user = new User({
+        firstName,
+        lastName,
+        emailId,
+        password: hashedPassword,
+        age,
+        photoUrl,
+        gender,
+        about,
+        skills,
+      });
+
+      if (skills?.length > 10) {
         throw new Error("Skills cannot be more that 10");
       }
 
