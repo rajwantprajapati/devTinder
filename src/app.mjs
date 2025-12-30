@@ -1,5 +1,6 @@
 import express from "express";
 import bcrypt from "bcrypt";
+import validator from "validator";
 import { connectDB } from "./config/database.mjs";
 import User from "./models/user.mjs";
 import { validateSignUpData } from "./utilities/validation.mjs";
@@ -66,6 +67,40 @@ try {
       res
         .status(400)
         .send({ error: { message: `SIGNUP FAILED: ${eror.message}` } });
+    }
+  });
+
+  /**
+   * Signin API
+   * POST /signin - Sign in api for user sign in
+   */
+  app.post("/signin", async (req, res) => {
+    try {
+      const { emailId, password } = req.body;
+
+      if (!validator.isEmail(emailId)) {
+        throw new Error("Please enter a valid email id.");
+      }
+
+      const user = await User.findOne({ emailId });
+
+      if (!user) {
+        throw new Error("Invalid Credentials.");
+      }
+
+      const isValidPassword = await bcrypt.compare(password, user.password);
+
+      if (!isValidPassword) {
+        throw new Error("Invalid Credentials.");
+      }
+
+      res.status(200).send({ message: "Signed in successfully." });
+    } catch (error) {
+      console.log("Error while Sign In: ", error.message);
+
+      res.status(400).send({
+        error: { message: `SIGNIN FAILED: ${error.message}` },
+      });
     }
   });
 
