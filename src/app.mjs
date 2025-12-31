@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { connectDB } from "./config/database.mjs";
 import User from "./models/user.mjs";
 import { validateSignUpData } from "./utilities/validation.mjs";
+import { userAuth } from "./middlewares/auth.mjs";
 
 const app = express();
 
@@ -91,16 +92,20 @@ try {
         throw new Error("Invalid Credentials.");
       }
 
-      const isValidPassword = await bcrypt.compare(password, user.password);
+      // Validate password
+      const isValidPassword = await user.validatePassword(password);
 
       if (!isValidPassword) {
         throw new Error("Invalid Credentials.");
       }
 
       // Generate JWT token and set in response cookie
-      const jwtToken = jwt.sign({ _id: user._id }, "");
+      const token = user.getJWT();
 
-      res.cookie("token", jwtToken);
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 1 * 3600000), // expired in 8 hrs
+        // httpOnly: true, // Flags the cookie to be accessible only by the web server.
+      });
 
       res.status(200).send({ message: "Signed in successfully." });
     } catch (error) {
@@ -227,26 +232,11 @@ try {
    * Profile API
    * GET /profile - get user details using cookie
    */
-  app.get("/profile", async (req, res) => {
+  app.get("/profile", userAuth, async (req, res) => {
     try {
-      const cookies = req.cookies;
-
-      console.log("cookies: ", cookies);
-
-      if (!cookies?.token) {
-        throw new Error("Invalid token.");
-      }
-
-      const decodedData = jwt.verify(cookies.token, "");
-      const user = await User.findById(decodedData._id);
-
-      if (!user) {
-        throw new Error("User does not exist!");
-      }
-
       res
         .status(200)
-        .send({ message: "Profile fetched successfully", data: user });
+        .send({ message: "Profile fetched successfully", data: req.user });
     } catch (error) {
       console.log("error in fetching profile: ", error.message);
 

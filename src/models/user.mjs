@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import validator from "validator";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const { Schema } = mongoose;
 
@@ -63,6 +65,28 @@ const userSchema = new Schema(
   },
   { timestamps: true },
 );
+
+// Re-usable custom schema method to generate JWT token
+userSchema.methods.getJWT = function () {
+  const user = this;
+
+  const token = jwt.sign({ _id: user._id }, "", { expiresIn: "1d" });
+
+  return token;
+};
+
+// Re-usable custom schema method to validate password entered by the user
+userSchema.methods.validatePassword = async function (userProvidedPassword) {
+  const user = this;
+  const hashedPassword = user.password;
+
+  const isValidPassword = await bcrypt.compare(
+    userProvidedPassword,
+    hashedPassword,
+  );
+
+  return isValidPassword;
+};
 
 const User = mongoose.model("User", userSchema);
 
