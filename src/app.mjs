@@ -1,6 +1,8 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import validator from "validator";
+import cookieParser from "cookie-parser";
+import jwt from "jsonwebtoken";
 import { connectDB } from "./config/database.mjs";
 import User from "./models/user.mjs";
 import { validateSignUpData } from "./utilities/validation.mjs";
@@ -9,6 +11,7 @@ const app = express();
 
 // req body parser middleware
 app.use(express.json());
+app.use(cookieParser());
 
 try {
   await connectDB();
@@ -93,6 +96,11 @@ try {
       if (!isValidPassword) {
         throw new Error("Invalid Credentials.");
       }
+
+      // Generate JWT token and set in response cookie
+      const jwtToken = jwt.sign({ _id: user._id }, "");
+
+      res.cookie("token", jwtToken);
 
       res.status(200).send({ message: "Signed in successfully." });
     } catch (error) {
@@ -207,10 +215,43 @@ try {
 
       res.status(200).send(users);
     } catch (error) {
-      console.log("error in fetching users ", error.message);
+      console.log("error in fetching users: ", error.message);
 
       res.status(400).send({
         error: { message: `FETCH ALL USERS FAILED: ${error.message}` },
+      });
+    }
+  });
+
+  /**
+   * Profile API
+   * GET /profile - get user details using cookie
+   */
+  app.get("/profile", async (req, res) => {
+    try {
+      const cookies = req.cookies;
+
+      console.log("cookies: ", cookies);
+
+      if (!cookies?.token) {
+        throw new Error("Invalid token.");
+      }
+
+      const decodedData = jwt.verify(cookies.token, "");
+      const user = await User.findById(decodedData._id);
+
+      if (!user) {
+        throw new Error("User does not exist!");
+      }
+
+      res
+        .status(200)
+        .send({ message: "Profile fetched successfully", data: user });
+    } catch (error) {
+      console.log("error in fetching profile: ", error.message);
+
+      res.status(400).send({
+        error: { message: `FETCH PROFILE FAILED: ${error.message}` },
       });
     }
   });
