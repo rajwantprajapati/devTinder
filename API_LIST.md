@@ -10,10 +10,9 @@
  - PATCH /profile.password
 
  ## ConnectionRequestRouter: Connection Request related Status and apis
- - Status: ignore, interested, accepted, rejected
+ - Status: ignored, interested, accepted, rejected
 
- - POST /request/send/interested/:userId
- - POST /request/send/ignored/:userId
+ - POST /request/send/:status/:userId
  - POST /request/send/accepted/:userId
  - POST /request/send/rejected/:userId
  
