@@ -1,5 +1,8 @@
 import validator from "validator";
 
+/**
+ * Method to validate sign up api req payload
+ */
 export const validateSignUpData = (reqPayload) => {
   const { firstName, lastName, emailId, password } = reqPayload;
 
@@ -12,4 +15,25 @@ export const validateSignUpData = (reqPayload) => {
       "Password should have min 8 characters, atleast 1 lowercase, atleast 1 uppercase and atleast 1 special character",
     );
   }
+};
+
+/**
+ * Method to validate profile update api req payload
+ */
+export const validateUpdateProfileData = (reqPayload) => {
+  const ALLOWED_EDIT_FIELDS = [
+    "firstName",
+    "lastName",
+    "age",
+    "gender",
+    "photoUrl",
+    "about",
+    "skills",
+  ];
+
+  const isUpdateAllowed = Object.keys(reqPayload).every((key) =>
+    ALLOWED_EDIT_FIELDS.includes(key),
+  );
+
+  return isUpdateAllowed;
 };

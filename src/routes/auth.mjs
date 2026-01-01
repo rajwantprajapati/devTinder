@@ -51,13 +51,13 @@ router.post("/signup", async (req, res) => {
 
     await user.save();
 
-    res.status(201).send("User signed up successfully!!");
+    res.status(201).json({ message: "User signed up successfully." });
   } catch (eror) {
     console.log("signup error: ", eror.message);
 
     res
       .status(400)
-      .send({ error: { message: `SIGNUP FAILED: ${eror.message}` } });
+      .json({ error: { message: `SIGNUP FAILED: ${eror.message}` } });
   }
 });
 
@@ -94,14 +94,26 @@ router.post("/signin", async (req, res) => {
       // httpOnly: true, // Flags the cookie to be accessible only by the web server.
     });
 
-    res.status(200).send({ message: "Signed in successfully." });
+    res.status(200).json({ message: "Signed in successfully." });
   } catch (error) {
     console.log("Error while Sign In: ", error.message);
 
-    res.status(400).send({
+    res.status(400).json({
       error: { message: `SIGNIN FAILED: ${error.message}` },
     });
   }
+});
+
+/**
+ * Signout api
+ * POST /signout - Api to logout the user
+ */
+router.post("/signout", (req, res) => {
+  res.cookie("token", null, {
+    expires: new Date(Date.now()),
+  });
+
+  res.status(200).json({ message: "Logged out successfully." });
 });
 
 export default router;
