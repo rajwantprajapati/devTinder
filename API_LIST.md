@@ -16,6 +16,6 @@
  - POST /request/review/:status/:requestId
  
  ## UserRouter: user related routes
+ - GET /user/requests/received
  - GET /user/connections
- - GET /user/request/recieved
  - GET /user/feed

@@ -10,6 +10,7 @@ import { userAuth } from "./middlewares/auth.mjs";
 import AuthRouter from "./routes/auth.mjs";
 import ProfileRouter from "./routes/profile.mjs";
 import RequestRouter from "./routes/request.mjs";
+import UserRouter from "./routes/user.mjs";
 
 const app = express();
 
@@ -28,6 +29,7 @@ try {
   app.use("/", AuthRouter);
   app.use("/profile", ProfileRouter);
   app.use("/request", RequestRouter);
+  app.use("/user", UserRouter);
 
   /**
    * Find User by email id
