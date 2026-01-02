@@ -13,8 +13,7 @@
  - Status: ignored, interested, accepted, rejected
 
  - POST /request/send/:status/:userId
- - POST /request/send/accepted/:userId
- - POST /request/send/rejected/:userId
+ - POST /request/review/:status/:requestId
  
  ## UserRouter: user related routes
  - GET /user/connections
