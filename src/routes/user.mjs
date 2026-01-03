@@ -44,9 +44,17 @@ router.get("/connections", userAuth, async (req, res) => {
         { fromUserId: loggedInUser._id, status: "accepted" },
         { toUserId: loggedInUser._id, status: "accepted" },
       ],
-    }).populate("fromUserId", USER_SAFE_DATA);
+    })
+      .populate("fromUserId", USER_SAFE_DATA)
+      .populate("toUserId", USER_SAFE_DATA);
 
-    const data = connections.map((connection) => connection.fromUserId);
+    const data = connections.map((connection) => {
+      if (connection.fromUserId._id.equals(loggedInUser._id)) {
+        return connection.toUserId;
+      }
+
+      return connection.fromUserId;
+    });
 
     res.status(200).json({
       message: "Connects fetched successfully.",
