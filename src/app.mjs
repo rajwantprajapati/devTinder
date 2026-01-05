@@ -1,18 +1,22 @@
 import express from "express";
-import bcrypt from "bcrypt";
-import validator from "validator";
 import cookieParser from "cookie-parser";
-import jwt from "jsonwebtoken";
+import cors from "cors";
 import { connectDB } from "./config/database.mjs";
 import User from "./models/user.mjs";
-import { validateSignUpData } from "./utilities/validation.mjs";
-import { userAuth } from "./middlewares/auth.mjs";
 import AuthRouter from "./routes/auth.mjs";
 import ProfileRouter from "./routes/profile.mjs";
 import RequestRouter from "./routes/request.mjs";
 import UserRouter from "./routes/user.mjs";
 
 const app = express();
+
+// Whitelist domain for the CORS
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 // req body parser middleware
 app.use(express.json());

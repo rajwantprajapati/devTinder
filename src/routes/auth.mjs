@@ -94,7 +94,7 @@ router.post("/signin", async (req, res) => {
       // httpOnly: true, // Flags the cookie to be accessible only by the web server.
     });
 
-    res.status(200).json({ message: "Signed in successfully." });
+    res.status(200).json({ message: "Signed in successfully.", data: user });
   } catch (error) {
     console.log("Error while Sign In: ", error.message);
 
