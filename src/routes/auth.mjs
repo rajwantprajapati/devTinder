@@ -49,9 +49,19 @@ router.post("/signup", async (req, res) => {
       throw new Error("Skills cannot be more that 10");
     }
 
-    await user.save();
+    const savedUser = await user.save();
 
-    res.status(201).json({ message: "User signed up successfully." });
+    // Generate JWT token and set in response cookie
+    const token = savedUser.getJWT();
+
+    res.cookie("token", token, {
+      expires: new Date(Date.now() + 1 * 3600000), // expired in 8 hrs
+      // httpOnly: true, // Flags the cookie to be accessible only by the web server.
+    });
+
+    res
+      .status(201)
+      .json({ message: "User signed up successfully.", data: savedUser });
   } catch (eror) {
     console.log("signup error: ", eror.message);
 
