@@ -14,7 +14,7 @@ export const userAuth = async (req, res, next) => {
     }
 
     // Validate the token
-    const decodedData = jwt.verify(token, "");
+    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
 
     // Get user data from the user id
     const user = await User.findById(decodedData._id);

@@ -7,8 +7,12 @@ import AuthRouter from "./routes/auth.mjs";
 import ProfileRouter from "./routes/profile.mjs";
 import RequestRouter from "./routes/request.mjs";
 import UserRouter from "./routes/user.mjs";
+import dotenv from "dotenv";
+import "dotenv/config";
 
 const app = express();
+
+dotenv.config({ path: "../.env" });
 
 // Whitelist domain for the CORS
 app.use(
