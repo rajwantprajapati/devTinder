@@ -11,10 +11,22 @@ const router = express.Router();
  * GET /profile/view - get user details using cookie
  */
 router.get("/view", userAuth, async (req, res) => {
+  const { firstName, lastName, photoUrl, gender, about, skills, age } =
+    req.user;
+
+  const userSafeData = {
+    firstName: firstName,
+    lastName: lastName,
+    photoUrl: photoUrl,
+    gender: gender,
+    about: about,
+    skills: skills,
+    age: age,
+  };
   try {
     res
       .status(200)
-      .json({ message: "Profile fetched successfully", data: req.user });
+      .json({ message: "Profile fetched successfully", data: userSafeData });
   } catch (error) {
     console.log("error in fetching profile: ", error.message);
 

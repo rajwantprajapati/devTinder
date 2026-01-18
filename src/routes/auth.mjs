@@ -4,6 +4,9 @@ import validator from "validator";
 import User from "../models/user.mjs";
 import { validateSignUpData } from "../utilities/validation.mjs";
 
+// fields that needs to be populated in connections
+const USER_SAFE_DATA = "firstName lastName photoUrl gender about skills age";
+
 const router = express.Router();
 
 /**
@@ -104,7 +107,20 @@ router.post("/signin", async (req, res) => {
       // httpOnly: true, // Flags the cookie to be accessible only by the web server.
     });
 
-    res.status(200).json({ message: "Signed in successfully.", data: user });
+    // Pick only safe fields for the response
+    const userSafeData = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      photoUrl: user.photoUrl,
+      gender: user.gender,
+      about: user.about,
+      skills: user.skills,
+      age: user.age,
+    };
+
+    res
+      .status(200)
+      .json({ message: "Signed in successfully.", data: userSafeData });
   } catch (error) {
     console.log("Error while Sign In: ", error.message);
 
